@@ -96,7 +96,7 @@ const groqfmtResource = wrapPromise(
     const go = new Go()
 
     const { instance } = await WebAssembly.instantiateStreaming(
-      fetch('/groqfmt.wasm'),
+      fetch('/groqfmt-1666211465073.wasm'),
       go.importObject,
     )
 
