@@ -1,5 +1,7 @@
 import { Suspense, useState } from 'react'
+import { suspend } from 'suspend-react'
 import '../lib/wasm-exec'
+import loadGroqfmt from '../lib/load-groqfmt'
 
 import {
   SandpackProvider,
@@ -43,7 +45,7 @@ export default Page
 const CodeEditor: React.FC<CodeEditorProps> = props => {
   const [error, setError] = useState<GroqfmtError>()
   const { code, updateCode } = useActiveCode()
-  const groqfmt = groqfmtResource.read()
+  const groqfmt = suspend(loadGroqfmt, ['groqfmt'])
 
   return (
     <>
@@ -75,47 +77,3 @@ const CodeEditor: React.FC<CodeEditorProps> = props => {
     </>
   )
 }
-
-const wrapPromise = promise => {
-  let status = 'pending'
-  let result
-  let suspend = promise().then(
-    res => {
-      status = 'success'
-      result = res
-    },
-    err => {
-      status = 'error'
-      result = err
-    },
-  )
-  return {
-    read() {
-      if (status === 'pending') {
-        throw suspend
-      } else if (status === 'error') {
-        throw result
-      } else if (status === 'success') {
-        return result
-      }
-    },
-  }
-}
-
-const groqfmtResource = wrapPromise(
-  async (): Promise<(query: string) => GroqfmtResult> => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    const go = new Go()
-
-    const { instance } = await WebAssembly.instantiateStreaming(
-      fetch('/groqfmt-1666211465073.wasm'),
-      go.importObject,
-    )
-
-    go.run(instance)
-    return groqfmt
-  },
-)
