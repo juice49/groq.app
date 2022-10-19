@@ -1,4 +1,4 @@
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import '../lib/wasm-exec'
 
 import {
@@ -41,6 +41,7 @@ name == "Harper" ] {
 export default Page
 
 const CodeEditor: React.FC<CodeEditorProps> = props => {
+  const [error, setError] = useState<GroqfmtError>()
   const { code, updateCode } = useActiveCode()
   const groqfmt = groqfmtResource.read()
 
@@ -51,12 +52,26 @@ const CodeEditor: React.FC<CodeEditorProps> = props => {
         type='button'
         onClick={() => {
           if (groqfmt) {
-            updateCode(groqfmt(code).result)
+            const { result, error } = groqfmt(code)
+
+            if (error) {
+              setError(error)
+              return
+            }
+
+            setError(undefined)
+            updateCode(result)
           }
         }}
       >
         Format
       </button>
+      {error && (
+        <section>
+          <h2>Error</h2>
+          <pre>{JSON.stringify(error, null, 2)}</pre>
+        </section>
+      )}
     </>
   )
 }
