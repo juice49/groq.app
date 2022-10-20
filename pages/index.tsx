@@ -2,6 +2,7 @@ import { Suspense, useState } from 'react'
 import { suspend } from 'suspend-react'
 import '../lib/wasm-exec'
 import loadGroqfmt from '../lib/load-groqfmt'
+import groqLinter from '../lib/groq-linter'
 
 import {
   SandpackProvider,
@@ -49,7 +50,7 @@ const CodeEditor: React.FC<CodeEditorProps> = props => {
 
   return (
     <>
-      <SandpackCodeEditor {...props} />
+      <SandpackCodeEditor {...props} extensions={[groqLinter]} />
       <button
         type='button'
         onClick={() => {
