@@ -1,8 +1,11 @@
 import { Suspense, useState } from 'react'
 import { suspend } from 'suspend-react'
+import '../global.css'
+import { logoStyle, navStyle } from '../index.css'
 import '../lib/wasm-exec'
 import loadGroqfmt from '../lib/load-groqfmt'
 import groqLinter from '../lib/groq-linter'
+import sandpackTheme from '../sandpack-theme'
 
 import {
   SandpackProvider,
@@ -15,7 +18,9 @@ import {
 const Page: React.FC = () => {
   return (
     <>
-      <h1>groq.app</h1>
+      <div className={navStyle}>
+        <h1 className={logoStyle}>groq.app</h1>
+      </div>
       <SandpackProvider
         template='vanilla-ts'
         files={{
@@ -31,9 +36,9 @@ name == "Harper" ] {
           activeFile: '/index.groq',
         }}
       >
-        <SandpackThemeProvider>
+        <SandpackThemeProvider theme={sandpackTheme}>
           <Suspense fallback={<p>groqfmt is loading&hellip;</p>}>
-            <CodeEditor showTabs={false} showLineNumbers />
+            <CodeEditor showTabs={false} style={{ padding: '2rem' }} />
           </Suspense>
         </SandpackThemeProvider>
       </SandpackProvider>
