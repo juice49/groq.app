@@ -1,5 +1,6 @@
 import { Suspense, useState } from 'react'
 import { suspend } from 'suspend-react'
+import { EditorView } from '@codemirror/view'
 import '../global.css'
 import { logoStyle, navStyle } from '../index.css'
 import '../lib/wasm-exec'
@@ -55,7 +56,10 @@ const CodeEditor: React.FC<CodeEditorProps> = props => {
 
   return (
     <>
-      <SandpackCodeEditor {...props} extensions={[groqLinter]} />
+      <SandpackCodeEditor
+        {...props}
+        extensions={[groqLinter, EditorView.theme({}, { dark: true })]}
+      />
       <button
         type='button'
         onClick={() => {
