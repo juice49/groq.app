@@ -1,16 +1,15 @@
 import { SandpackThemeProp } from '@codesandbox/sandpack-react'
+import theme from './theme.css'
 
 const sandpackTheme: SandpackThemeProp = {
   colors: {
-    base: 'red',
-    surface1: 'rgb(18, 18, 18)',
-    surface2: 'red',
-    surface3: 'rgb(0, 0, 0)',
+    surface1: theme.colors.background,
+    surface3: theme.colors.foreground,
   },
   font: {
-    size: '1.1rem',
+    size: '1rem',
     lineHeight: '1.9',
-    mono: 'ui-monospace',
+    mono: theme.fonts.mono,
   },
 }
 

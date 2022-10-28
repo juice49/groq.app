@@ -1,4 +1,5 @@
 import { globalStyle } from '@vanilla-extract/css'
+import theme from './theme.css'
 
 globalStyle('*', {
   margin: 0,
@@ -6,6 +7,11 @@ globalStyle('*', {
 })
 
 globalStyle(':root', {
-  backgroundColor: 'rgb(18, 18, 18)',
-  fontFamily: 'system-ui',
+  backgroundColor: theme.colors.background,
+  fontFamily: theme.fonts.mono,
+  fontSize: 'clamp(1em, calc(1em + 0.28vw), 3.4em)',
+})
+
+globalStyle('.cm-content, .cm-scroller', {
+  padding: '0 !important',
 })

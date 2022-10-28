@@ -1,8 +1,9 @@
 import { Suspense, useState } from 'react'
 import { suspend } from 'suspend-react'
 import { EditorView } from '@codemirror/view'
+import '../theme.css'
 import '../global.css'
-import { logoStyle, navStyle } from '../index.css'
+import { logo, nav, container, containerInner } from '../index.css'
 import '../lib/wasm-exec'
 import loadGroqfmt from '../lib/load-groqfmt'
 import groqLinter from '../lib/groq-linter'
@@ -19,8 +20,8 @@ import {
 const Page: React.FC = () => {
   return (
     <>
-      <div className={navStyle}>
-        <h1 className={logoStyle}>groq.app</h1>
+      <div className={nav}>
+        <h1 className={logo}>groq.app</h1>
       </div>
       <SandpackProvider
         template='vanilla-ts'
@@ -39,7 +40,7 @@ name == "Harper" ] {
       >
         <SandpackThemeProvider theme={sandpackTheme}>
           <Suspense fallback={<p>groqfmt is loading&hellip;</p>}>
-            <CodeEditor showTabs={false} style={{ padding: '2rem' }} />
+            <CodeEditor showTabs={false} />
           </Suspense>
         </SandpackThemeProvider>
       </SandpackProvider>
@@ -55,35 +56,37 @@ const CodeEditor: React.FC<CodeEditorProps> = props => {
   const groqfmt = suspend(loadGroqfmt, ['groqfmt'])
 
   return (
-    <>
-      <SandpackCodeEditor
-        {...props}
-        extensions={[groqLinter, EditorView.theme({}, { dark: true })]}
-      />
-      <button
-        type='button'
-        onClick={() => {
-          if (groqfmt) {
-            const { result, error } = groqfmt(code)
+    <main className={container}>
+      <div className={containerInner}>
+        <SandpackCodeEditor
+          {...props}
+          extensions={[groqLinter, EditorView.theme({}, { dark: true })]}
+        />
+        <button
+          type='button'
+          onClick={() => {
+            if (groqfmt) {
+              const { result, error } = groqfmt(code)
 
-            if (error) {
-              setError(error)
-              return
+              if (error) {
+                setError(error)
+                return
+              }
+
+              setError(undefined)
+              updateCode(result)
             }
-
-            setError(undefined)
-            updateCode(result)
-          }
-        }}
-      >
-        Format
-      </button>
-      {error && (
-        <section>
-          <h2>Error</h2>
-          <pre>{JSON.stringify(error, null, 2)}</pre>
-        </section>
-      )}
-    </>
+          }}
+        >
+          Format
+        </button>
+        {error && (
+          <section>
+            <h2>Error</h2>
+            <pre>{JSON.stringify(error, null, 2)}</pre>
+          </section>
+        )}
+      </div>
+    </main>
   )
 }
