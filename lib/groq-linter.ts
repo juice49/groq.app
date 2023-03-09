@@ -15,6 +15,12 @@ const groqLinter = linter(view => {
     return []
   }
 
+  // If the input is a URL, do not treat it as GROQ.
+  try {
+    new URL(code)
+    return []
+  } catch {}
+
   return [
     {
       from: error.begin,

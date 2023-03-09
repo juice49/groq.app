@@ -52,6 +52,7 @@ export default Page
 
 const CodeEditor: React.FC<CodeEditorProps> = props => {
   const [error, setError] = useState<GroqfmtError>()
+  const [params, setParams] = useState<Record<string, string>>()
   const { code, updateCode } = useActiveCode()
   const groqfmt = suspend(loadGroqfmt, ['groqfmt'])
 
@@ -65,17 +66,24 @@ const CodeEditor: React.FC<CodeEditorProps> = props => {
         <button
           type='button'
           onClick={() => {
-            if (groqfmt) {
-              const { result, error } = groqfmt(code)
-
-              if (error) {
-                setError(error)
-                return
-              }
-
-              setError(undefined)
-              updateCode(result)
+            if (!groqfmt) {
+              return
             }
+
+            const { result, error, params } = format({
+              input: code,
+              groqfmt,
+            })
+
+            setParams(params)
+
+            if (error) {
+              setError(error)
+              return
+            }
+
+            setError(undefined)
+            updateCode(result)
           }}
         >
           Format
@@ -86,7 +94,67 @@ const CodeEditor: React.FC<CodeEditorProps> = props => {
             <pre>{JSON.stringify(error, null, 2)}</pre>
           </section>
         )}
+        {params && (
+          <section>
+            <h2>Params</h2>
+            <pre>{JSON.stringify(params, null, 2)}</pre>
+          </section>
+        )}
       </div>
     </main>
   )
+}
+
+function format({
+  input,
+  groqfmt,
+}: {
+  input: string
+  groqfmt: (query: string) => GroqfmtResult
+}): GroqfmtResult & {
+  params?: Record<string, string>
+} {
+  const { result, error } = groqfmt(input)
+
+  if (error) {
+    try {
+      const url = new URL(input)
+      const query = url.searchParams.get('query')
+
+      if (query) {
+        return {
+          ...groqfmt(query),
+          params: getQueryParams(url),
+        }
+      }
+
+      return {
+        result,
+        error,
+      }
+    } catch {}
+
+    return {
+      result,
+      error,
+    }
+  }
+
+  return {
+    result,
+    error,
+  }
+}
+
+function getQueryParams(url: URL): Record<string, string> {
+  return [...url.searchParams.entries()].reduce((params, [key, value]) => {
+    if (!key.startsWith('$')) {
+      return params
+    }
+
+    return {
+      ...params,
+      [key.slice(1)]: value.replaceAll('"', ''),
+    }
+  }, {})
 }
