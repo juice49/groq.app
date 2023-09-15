@@ -1,10 +1,11 @@
 import { Suspense, useState } from 'react'
 import { suspend } from 'suspend-react'
 import { EditorView } from '@codemirror/view'
+import { type GroqfmtError, format } from '@groqfmt/wasm'
 import '../theme.css'
 import '../global.css'
 import { logo, nav, container, containerInner } from '../index.css'
-import '../lib/wasm_exec'
+import '@groqfmt/wasm/dist/wasm-exec'
 import loadGroqfmt from '../lib/load-groqfmt'
 import groqLinter from '../lib/groq-linter'
 import sandpackTheme from '../sandpack-theme'
@@ -103,58 +104,4 @@ const CodeEditor: React.FC<CodeEditorProps> = props => {
       </div>
     </main>
   )
-}
-
-function format({
-  input,
-  groqfmt,
-}: {
-  input: string
-  groqfmt: (query: string) => GroqfmtResult
-}): GroqfmtResult & {
-  params?: Record<string, string>
-} {
-  const { result, error } = groqfmt(input)
-
-  if (error) {
-    try {
-      const url = new URL(input)
-      const query = url.searchParams.get('query')
-
-      if (query) {
-        return {
-          ...groqfmt(query),
-          params: getQueryParams(url),
-        }
-      }
-
-      return {
-        result,
-        error,
-      }
-    } catch {}
-
-    return {
-      result,
-      error,
-    }
-  }
-
-  return {
-    result,
-    error,
-  }
-}
-
-function getQueryParams(url: URL): Record<string, string> {
-  return [...url.searchParams.entries()].reduce((params, [key, value]) => {
-    if (!key.startsWith('$')) {
-      return params
-    }
-
-    return {
-      ...params,
-      [key.slice(1)]: value.replaceAll('"', ''),
-    }
-  }, {})
 }
