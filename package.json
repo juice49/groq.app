@@ -8,7 +8,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "moveGroqfmt": "mkdir -p ./public && cp ./node_modules/@groqfmt/wasm/dist/groqfmt.wasm ./public",
+    "postinstall": "npm run moveGroqfmt"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,7 @@
   "homepage": "https://github.com/juice49/groq.app#readme",
   "dependencies": {
     "@codesandbox/sandpack-react": "^1.14.2",
+    "@groqfmt/wasm": "^1.0.0",
     "@vanilla-extract/css": "^1.9.1",
     "next": "^13.0.0",
     "react": "^18.2.0",
