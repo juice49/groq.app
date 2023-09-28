@@ -9,7 +9,7 @@ export default async function loadGroqfmt(): Promise<Groqfmt | undefined> {
   const go = new Go()
 
   const { instance } = await WebAssembly.instantiateStreaming(
-    fetch('/groqfmt.wasm'),
+    fetch(`/${process.env.NEXT_PUBLIC_GROQFMT_BINARY}`),
     go.importObject,
   )
 
