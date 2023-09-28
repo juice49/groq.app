@@ -71,20 +71,20 @@ const CodeEditor: React.FC<CodeEditorProps> = props => {
               return
             }
 
-            const { result, error, params } = format({
+            const result = format({
               input: code,
               groqfmt,
             })
 
-            setParams(params)
+            setParams(result.inputMode === 'url' ? result.params : undefined)
 
-            if (error) {
-              setError(error)
+            if (result.error) {
+              setError(result.error)
               return
             }
 
             setError(undefined)
-            updateCode(result)
+            updateCode(result.result)
           }}
         >
           Format
