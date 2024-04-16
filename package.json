@@ -22,7 +22,7 @@
   "homepage": "https://github.com/juice49/groq.app#readme",
   "dependencies": {
     "@codesandbox/sandpack-react": "^1.14.2",
-    "@groqfmt/wasm": "^1.0.0",
+    "@groqfmt/wasm": "^1.2.2",
     "@vanilla-extract/css": "^1.9.1",
     "next": "^13.0.0",
     "react": "^18.2.0",
